@@ -1,0 +1,4 @@
+{
+  "target_group": "api_staging",
+  "app_environment": "staging"
+}

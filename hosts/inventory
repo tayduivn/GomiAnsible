@@ -1,0 +1,17 @@
+[all:children]
+test
+store_production
+store_staging
+
+[store_production]
+TH_STORE_PRODUCTION ansible_host=18.138.189.204
+VN_STORE_PRODUCTION ansible_host=3.1.50.63
+KR_STORE_PRODUCTION ansible_host=13.229.47.118
+
+[store_staging]
+TH_STORE_STAGING ansible_host=18.139.108.138
+VN_STORE_STAGING ansible_host=54.251.3.104
+
+[store:children]
+store_staging
+store_production

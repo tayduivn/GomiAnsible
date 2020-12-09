@@ -1,0 +1,11 @@
+---
+# tasks file for rails-db-migrate
+
+- name: Update DB Schema and Data
+  command: bash -lc "rails db:{{ (db_action == 'migrate') | ternary('migrate:with_data', 'schema:dump') }} RAILS_ENV={{ app_environment }} DISABLE_DATABASE_ENVIRONMENT_CHECK=1"
+  register: db_update_task
+  args:
+    chdir: "{{ app_path }}"
+
+- debug: var=db_update_task.stderr_lines
+- debug: var=db_update_task.stdout_lines

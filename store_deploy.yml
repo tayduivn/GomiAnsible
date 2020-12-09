@@ -1,0 +1,13 @@
+- hosts: store_staging
+  vars_files:
+    - secrets.yml
+  vars:
+    app_name: "GomiStore"
+    app_path: "{{ base_path }}/{{ app_name }}"
+    repo_url: "{{ base_repo_url }}/{{ app_name }}.git"
+    db_action: "dump"
+  roles: 
+    - rails-app-update
+    - rails-db-update
+    - rails-app-restart
+    - nginx-restart

@@ -1,0 +1,11 @@
+---
+# tasks file for rails-db-migrate
+
+- name: DB Schema dump
+  command: bash -lc "rails db:schema:dump RAILS_ENV={{ app_environment }} DISABLE_DATABASE_ENVIRONMENT_CHECK=1"
+  register: db_schema_dump_task
+  args:
+    chdir: "{{ app_path }}"
+
+- debug: var=db_schema_dump_task.stderr_lines
+- debug: var=db_schema_dump_task.stdout_lines

@@ -1,0 +1,6 @@
+ansible_ssh_private_key_file: '/Users/gomidev/.ssh/pems/gomicorp_developer.pem'
+ansible_user: 'ec2-user'
+
+user_name: 'ec2-user'
+base_repo_url: 'github.com/gomicorp'
+base_path: '/home/ec2-user'

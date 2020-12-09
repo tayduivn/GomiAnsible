@@ -1,0 +1,22 @@
+---
+# tasks file for nginx-restart
+
+- name: Nginx Stop
+  command: "/opt/nginx/sbin/nginx -s stop"
+  register: nginx_stop_task
+  become: yes
+  become_method: sudo
+
+
+- debug: var=nginx_stop_task.stderr_lines
+- debug: var=nginx_stop_task.stdout_lines
+
+
+- name: Nginx Start
+  command: "/opt/nginx/sbin/nginx"
+  register: nginx_start_task
+  become: yes
+  become_method: sudo
+
+- debug: var=nginx_start_task.stderr_lines
+- debug: var=nginx_start_task.stdout_lines

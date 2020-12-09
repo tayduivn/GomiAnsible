@@ -1,0 +1,11 @@
+---
+# tasks file for rails-db-migrate
+
+- name: DB Migrate
+  command: bash -lc "rails db:migrate RAILS_ENV={{ app_environment }} DISABLE_DATABASE_ENVIRONMENT_CHECK=1"
+  register: db_migrate_task
+  args:
+    chdir: "{{ app_path }}"
+
+- debug: var=db_migrate_task.stderr_lines
+- debug: var=db_migrate_task.stdout_lines

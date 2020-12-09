@@ -1,0 +1,5 @@
+{
+  "target_group": "api_production",
+  "app_environment": "production",
+  "git_version": "master"
+}

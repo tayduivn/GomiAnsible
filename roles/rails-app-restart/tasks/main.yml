@@ -1,0 +1,11 @@
+---
+# tasks file for rails-app-restart
+
+- name: App Restart
+  command: bash -lc "touch tmp/restart.txt"
+  register: app_restart_task
+  args:
+    chdir: "{{ app_path }}"
+
+- debug: var=app_restart_task.stderr_lines
+- debug: var=app_restart_task.stdout_lines
