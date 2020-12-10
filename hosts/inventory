@@ -1,7 +1,7 @@
 [all:children]
-test
 store_production
 store_staging
+api
 
 [store_production]
 TH_STORE_PRODUCTION ansible_host=18.138.189.204
@@ -15,3 +15,6 @@ VN_STORE_STAGING ansible_host=54.251.3.104
 [store:children]
 store_staging
 store_production
+
+[api]
+ECOMMERCE_API ansible_host=13.212.202.128
