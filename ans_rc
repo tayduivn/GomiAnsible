@@ -22,14 +22,16 @@ function gomi_ansible_init() {
   echo -e "Your github account is saved.\nYou can rewrite use command \"${MAGENTA}secredit${NC}\""
   read -n "_?Press enter to continue"
   clear
-  echo -e"$HEADER"
+  echo -e "$HEADER"
   if [ "${PWD}" = "${HOME}/.ansible" ]; then
+    echo "Directory is already set."
+  else
     ask_replacing_dir
   fi
-  echo "  ___                  ___  \n"
-  echo " (o o)                (o o) \n"
-  echo "(  V  ) Setting Done (  V  )\n"
-  echo "--m-m------------------m-m--\n"
+  echo "  ___                  ___  "
+  echo " (o o)                (o o) "
+  echo "(  V  ) Setting Done (  V  )"
+  echo "--m-m------------------m-m--"
 }
 
 function ask_replacing_dir() {
