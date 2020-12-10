@@ -7,10 +7,11 @@ alias deploy-store="ansible-playbook -i ~/.ansible/inventories/store_staging sto
 function gomi_ansible_init() {
   MAGENTA='\033[0;35m'
   NC='\033[0m'
-  SP_LINE="================================================"
   CHECK_MARK="\033[0;32m\xE2\x9C\x94\033[0m"
+  SP_LINE="================================================"
+  HEADER="${SP_LINE}\nInitiate to fit your ansible for gomi ansible\n${SP_LINE}"
   clear
-  echo "${SP_LINE}\nInitiate to fit your ansible for gomi ansible\n${SP_LINE}"
+  echo "$HEADER"
   sleep 1
   echo -e "Set your github name and password for git tasks"
   read -n "username?Type your Github name : "
@@ -21,9 +22,9 @@ function gomi_ansible_init() {
   echo -e "Your github account is saved.\nYou can rewrite use command \"${MAGENTA}secredit${NC}\""
   read "Press enter to continue"
   clear
-  echo "${SP_LINE}\nInitiate to fit your ansible for gomi ansible\n${SP_LIN}"
-  if [ ${PWD} = ${HOME}/.ansible ]; then
-    ask_replacing_dir()
+  echo -e"$HEADER"
+  if [ "${PWD}" = "${HOME}/.ansible" ]; then
+    ask_replacing_dir
   fi
   echo "  ___                  ___  \n"
   echo " (o o)                (o o) \n"
@@ -31,14 +32,14 @@ function gomi_ansible_init() {
   echo "--m-m------------------m-m--\n"
 }
 
-ask_replacing_dir() {
+function ask_replacing_dir() {
   RED='\033[0;31m'
   NC='\033[0m'
   echo -e "You should replace ansible default directory to use GomiAnsible.\n"
   echo -e "You can do this later using command \"replace_default_dir\"\n"
   echo -e "(${RED}It will overwrite ansible default directory.${NC})\n"
   read "do?Replace now? [y/any(no)] :"
-  if [ ${do} -eq y ]; then
+  if [ "${do}" = "y" ]; then
     eval "replace_default_dir"
   fi
 }
