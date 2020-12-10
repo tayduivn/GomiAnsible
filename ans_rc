@@ -20,7 +20,7 @@ function gomi_ansible_init() {
   eval "ansible-vault encrypt secrets.yml"
   echo -e "\r${CHECK_MARK}"
   echo -e "Your github account is saved.\nYou can rewrite use command \"${MAGENTA}secredit${NC}\""
-  read "Press enter to continue"
+  read -n "_?Press enter to continue"
   clear
   echo -e"$HEADER"
   if [ "${PWD}" = "${HOME}/.ansible" ]; then
