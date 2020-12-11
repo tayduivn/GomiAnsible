@@ -1,0 +1,148 @@
+ANSIBLE_PATH="${HOME}/.ansible"
+
+REPLACE_DIR="rm -rf ${ANSIBLE_PATH} && mv -f ../GomiAnsible ${ANSIBLE_PATH} && cd ${ANSIBLE_PATH};"
+SECRET_EDIT="ansible-vault edit ~${ANSIBLE_PATH}/secrets.yml"
+DEPLOY="ansible-playbook --ask-vault-pass" # "${ANSIBLE_PATH}/store_deploy.yml -i ${ANSIBLE_PATH}/inventories/store_staging"
+
+
+MAGENTA='\033[0;35m'
+CYAN='\033[0;36m'
+RED='\033[0;31m'
+NC='\033[0m'
+CHECK_MARK="\033[0;32m\xE2\x9C\x94\033[0m"
+SP_LINE="================================================"
+
+# $1: task
+# $2..: options
+function gomsible() {
+  TARGET=""
+  ENV=""
+  BRANCH=""
+  HOTFIX="false"
+
+  WELLCOME="\n\n${SP_LINE}\nWellcome to Gomi Ansible!\nPlease read README\n${CYAN}https://github.com/gomicorp/GomiAnsible/${NC}\n${SP_LINE}"
+
+  args=("$@")
+
+  case $args[1] in
+    "")
+      # 도움말
+      echo "$WELLCOME"
+      ;;
+    "help")
+      # 도움말
+      echo "$WELLCOME"
+      ;;
+    "init")
+      __gomsible_init
+      ;;
+    "secredit")
+    # secret 수정 함수 실행
+      __gomsible_secret_edit
+      ;;
+    "setdir")
+      # set dir
+      __gomsible_ask_replacing_dir
+      ;;
+    "deploy")
+      echo "deploy"
+      # ansible-playbook
+      # 옵션 파싱
+      # args 는 전체 arg
+      __gomsible_params_purify ${args}
+      if [ ${#TARGET} -lt 1 ]; then
+        echo "${SP_LINE}\n${RED}ERROR :: target must be required.(-t)"
+      elif [ ${#ENV} -lt 1 ]; then
+        echo "${SP_LINE}\n${RED}ERROR :: environment must be required.(-e)"
+      else
+        __gomsible_deploy ${TARGET} ${ENV} ${HOTFIX} ${BRANCH}
+      fi
+      ;;
+  esac
+}
+
+function __gomsible_init() {
+  HEADER="${SP_LINE}\nInitiate to fit your ansible for gomi ansible\n${SP_LINE}"
+  clear
+  echo "${HEADER}"
+  sleep 0.4
+  echo -e "Set your github name and password for git tasks"
+  read -n "username?Type your Github name : "
+  read -n "password?Type your Github password : "
+  echo "gituser: ${username}\ngitpassword: ${password}" > secrets.yml
+  eval "ansible-vault encrypt secrets.yml"
+  echo -e "\r${CHECK_MARK}"
+  echo -e "Your github account is saved.\nYou can rewrite use command \"${MAGENTA}gomsible secredit${NC}\""
+  read -n "_?Press enter to continue"
+  clear
+  echo -e "${HEADER}"
+  __gomsible_ask_replacing_dir
+  echo "\nexport PATH=\$HOME/bin:${ANSIBLE_PATH}/bin:\$PATH" >> ${HOME}/.zshrc
+  echo "  ___                  ___  "
+  echo " (o o)                (o o) "
+  echo "(  V  ) Setting Done (  V  )"
+  echo "--m-m------------------m-m--"
+  eval "source ${HOME}/.zshrc"
+}
+
+function __gomsible_ask_replacing_dir() {
+  echo -e "Checking directory.."
+  sleep 1
+  if [ "${PWD}" = "${ANSIBLE_PATH}" ]; then
+    echo "${MAGENTA}Directory is already set.${NC}"
+  else
+      echo -e "You should replace ansible default directory to use GomiAnsible.\n"
+      echo -e "You can do this later using command \"${MAGENTA}gomsible setdir${NC}\"\n"
+      echo -e "(${RED}It will overwrite ansible default directory.${NC})\n"
+      read "do?Replace now? [y/any(no)] :"
+      if [ "${do}" = "y" ]; then
+        eval "${REPLACE_DIR}"
+      fi
+  fi
+}
+
+function __gomsible_params_purify() {
+  # 옵션들을 받음
+  args=("$@")
+  # 두번째 arg부터 옵션
+  for ((i=2; i < $#; i++))
+{
+  case $args[i] in
+    "-t")
+      TARGET="${args[i+1]}"
+    ;;
+    "-e")
+      ENV="${args[i+1]}"
+    ;;
+    "--hotfix")
+      HOTFIX="true"
+    ;;
+    "-b")
+      BRANCH="${args[i+1]}"
+    ;;
+  esac
+}
+}
+
+function __gomsible_secret_edit() {
+  eval "ansible-vault edit ${ANSIBLE_PATH}"
+}
+
+function __gomsible_deploy() {
+  TARGET=$1
+  ENV=$2
+  BRANCH=$4
+  IS_HOTFIX=""
+  if [ $3 ]; then
+    IS_HOTFIX=" -e hotfix=true"
+  fi
+  # branch
+  if [ ${#BRANCH} -ge 1 ]; then
+    BRANCH=" -e git_version=$4"
+  else
+    BRANCH=""
+  fi
+  COMMAND="${DEPLOY} ${ANSIBLE_PATH}/store_deploy.yml -i ${ANSIBLE_PATH}/inventories/${TARGET}_${ENV}${IS_HOTFIX}${BRANCH}"
+  eval ${COMMAND}
+
+}
