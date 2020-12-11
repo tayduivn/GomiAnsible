@@ -1,8 +1,8 @@
 ANSIBLE_PATH="${HOME}/.ansible"
-
+# TODO: 프로젝트 폴더 경로 간접 선택으로 변경
 REPLACE_DIR="rm -rf ${ANSIBLE_PATH} && mv -f ../GomiAnsible ${ANSIBLE_PATH} && cd ${ANSIBLE_PATH};"
 SECRET_EDIT="ansible-vault edit ~${ANSIBLE_PATH}/secrets.yml"
-DEPLOY="ansible-playbook --ask-vault-pass" # "${ANSIBLE_PATH}/store_deploy.yml -i ${ANSIBLE_PATH}/inventories/store_staging"
+DEPLOY="ansible-playbook --ask-vault-pass"
 
 
 MAGENTA='\033[0;35m'
@@ -77,6 +77,7 @@ function __gomsible_init() {
   clear
   echo -e "${HEADER}"
   __gomsible_ask_replacing_dir
+  # TODO: path 점검 후 추가
   echo "\nexport PATH=\$HOME/bin:${ANSIBLE_PATH}/bin:\$PATH" >> ${HOME}/.zshrc
   echo "  ___                  ___  "
   echo " (o o)                (o o) "
