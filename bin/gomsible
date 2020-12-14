@@ -1,6 +1,6 @@
 ANSIBLE_PATH="${HOME}/.ansible"
-# TODO: 프로젝트 폴더 경로 간접 선택으로 변경
-REPLACE_DIR="rm -rf ${ANSIBLE_PATH} && mv -f ../GomiAnsible ${ANSIBLE_PATH} && cd ${ANSIBLE_PATH};"
+PROJECT_PATH=`pwd | sed 's%\(.*/ansible_origin\)/.*%\1%'`
+REPLACE_DIR="rm -rf ${ANSIBLE_PATH} && mv -f ${PROJECT_PATH} ${ANSIBLE_PATH} && cd ${ANSIBLE_PATH};"
 SECRET_EDIT="ansible-vault edit ~${ANSIBLE_PATH}/secrets.yml"
 DEPLOY="ansible-playbook --ask-vault-pass"
 
@@ -8,6 +8,7 @@ DEPLOY="ansible-playbook --ask-vault-pass"
 MAGENTA='\033[0;35m'
 CYAN='\033[0;36m'
 RED='\033[0;31m'
+YELLOW='\033[0;33m'
 NC='\033[0m'
 CHECK_MARK="\033[0;32m\xE2\x9C\x94\033[0m"
 SP_LINE="================================================"
@@ -45,15 +46,26 @@ function gomsible() {
       __gomsible_ask_replacing_dir
       ;;
     "deploy")
-      echo "deploy"
       # ansible-playbook
       # 옵션 파싱
       # args 는 전체 arg
       __gomsible_params_purify ${args}
+      echo -ne "${YELLOW}deploy to ${TARGET} ${ENV} server ${NC}"\\r
+      sleep 0.3
+      echo -ne "${YELLOW}deploy to ${TARGET} ${ENV} server \033[1;37m\xe2\x9c\x88${NC}"\\r
+      sleep 0.3
+      echo -ne "${YELLOW}deploy to ${TARGET} ${ENV} server \033[1;37m\xe2\x9c\x88 \033[1;36m\xe2\x9c\x88${NC}\\r"
+      sleep 0.3
+      echo -ne "${YELLOW}deploy to ${TARGET} ${ENV} server \033[1;37m\xe2\x9c\x88 \033[1;36m\xe2\x9c\x88 \033[1;34m\xe2\x9c\x88${NC}\\r"
+      sleep 0.3
+      if [ '${ENV}' = 'production' ]; then
+        echo "${RED}!!! YOU ARE DEPLOYING TO PRODUCTION !!! \nHope you know what you do.${NC}"
+        read -n "_?Press enter to continue"
+      fi
       if [ ${#TARGET} -lt 1 ]; then
-        echo "${SP_LINE}\n${RED}ERROR :: target must be required.(-t)"
+        echo "${SP_LINE}\n${RED}ERROR :: Target option must be required.(-t)"
       elif [ ${#ENV} -lt 1 ]; then
-        echo "${SP_LINE}\n${RED}ERROR :: environment must be required.(-e)"
+        echo "${SP_LINE}\n${RED}ERROR :: Environment option must be required.(-e)"
       else
         __gomsible_deploy ${TARGET} ${ENV} ${HOTFIX} ${BRANCH}
       fi
@@ -77,8 +89,9 @@ function __gomsible_init() {
   clear
   echo -e "${HEADER}"
   __gomsible_ask_replacing_dir
-  # TODO: path 점검 후 추가
-  echo "\nexport PATH=\$HOME/bin:${ANSIBLE_PATH}/bin:\$PATH" >> ${HOME}/.zshrc
+  if [ `echo ${PATH} | grep -c "${ANSIBLE_PATH}"` -le 0 ]; then
+    echo "\nexport PATH=\$HOME/bin:${ANSIBLE_PATH}/bin:\$PATH" >> ${HOME}/.zshrc
+  fi
   echo "  ___                  ___  "
   echo " (o o)                (o o) "
   echo "(  V  ) Setting Done (  V  )"
@@ -89,7 +102,7 @@ function __gomsible_init() {
 function __gomsible_ask_replacing_dir() {
   echo -e "Checking directory.."
   sleep 1
-  if [ "${PWD}" = "${ANSIBLE_PATH}" ]; then
+  if [ "${PROJECT_PATH}" = "${ANSIBLE_PATH}" ]; then
     echo "${MAGENTA}Directory is already set.${NC}"
   else
       echo -e "You should replace ansible default directory to use GomiAnsible.\n"
