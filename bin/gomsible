@@ -1,3 +1,5 @@
+#! /bin/zsh
+
 ANSIBLE_PATH="${HOME}/.ansible"
 PROJECT_PATH=`pwd | sed 's%\(.*/ansible_origin\)/.*%\1%'`
 REPLACE_DIR="rm -rf ${ANSIBLE_PATH} && mv -f ${PROJECT_PATH} ${ANSIBLE_PATH} && cd ${ANSIBLE_PATH};"
@@ -83,14 +85,15 @@ function __gomsible_init() {
   read -n "password?Type your Github password : "
   echo "gituser: ${username}\ngitpassword: ${password}" > secrets.yml
   eval "ansible-vault encrypt secrets.yml"
-  echo -e "\r${CHECK_MARK}"
-  echo -e "Your github account is saved.\nYou can rewrite use command \"${MAGENTA}gomsible secredit${NC}\""
+  echo -e "${CHECK_MARK} Your github account is saved.\nYou can rewrite use command \"${MAGENTA}gomsible secredit${NC}\""
   read -n "_?Press enter to continue"
   clear
   echo -e "${HEADER}"
   __gomsible_ask_replacing_dir
-  if [ `echo ${PATH} | grep -c "${ANSIBLE_PATH}"` -le 0 ]; then
-    echo "\nexport PATH=\$HOME/bin:${ANSIBLE_PATH}/bin:\$PATH" >> ${HOME}/.zshrc
+  RC="${HOME}/.zshrc"
+  REGIST="source ${ANSIBLE_PATH}/bin/gomsible"
+  if ! grep -q ${REGIST} "${RC}"; then
+    echo ${REGIST} >> ${RC}
   fi
   echo "  ___                  ___  "
   echo " (o o)                (o o) "
