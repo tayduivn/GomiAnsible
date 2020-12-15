@@ -48,6 +48,7 @@ _`zshell`을 사용하는 것을 가정하고 작성되었습니다._
   - 소스 코드를 반영하기 위한 git 명령에 필요한 account config 등록
   - `GomiAnsible`dir을 `.ansible`dir로 덮어쓰기
   - `gomsible` 명령어를 전역으로 사용하기 위해 zshrc에 등록
+
 git 계정은 ansible에서 암호화 하여 관리하는 secrets.yml에 안전하게 저장됩니다.
 
 secrets.yml은 git에 올라가지 않습니다. 안심하고 입력해주세요.
