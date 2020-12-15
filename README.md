@@ -113,6 +113,8 @@ https://github.com/gomicorp/GomiAnsible/
 #### 6. 여기까지 진행하셨다면 성공적으로 초기화를 완료하셨습니다! 🎉
 아래에서 gomsible의 세부 task를 알아봅니다.
 
+---
+
 ### gomsible deploy
 > 원하는 서버의 원하는 환경에 코드를 배포하는, ~무서운~ 😇 명령어입니다.
 
