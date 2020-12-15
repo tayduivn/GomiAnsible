@@ -151,6 +151,7 @@ function __gomsible_secret_edit() {
 function __gomsible_deploy() {
   TARGET=$1
   ENV=$2
+  TARGET_HOST="${TARGET}_${ENV}"
   BRANCH=$4
   IS_HOTFIX=""
   if [ $3 ]; then
@@ -162,6 +163,6 @@ function __gomsible_deploy() {
   else
     BRANCH=""
   fi
-  COMMAND="${DEPLOY} ${ANSIBLE_PATH}/store_deploy.yml -i ${ANSIBLE_PATH}/hosts/inventory -e target_host=${TARGET}_${ENV}${IS_HOTFIX}${BRANCH}"
+  COMMAND="${DEPLOY} ${ANSIBLE_PATH}/store_deploy.yml -i ${ANSIBLE_PATH}/hosts/inventory -e target_host=${TARGET_HOST} -e \"@${ANSIBLE_PATH}/vars/${TARGET_HOST}.json\" ${IS_HOTFIX}${BRANCH}"
   eval ${COMMAND}
 }
