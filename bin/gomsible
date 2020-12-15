@@ -145,7 +145,7 @@ function __gomsible_params_purify() {
 }
 
 function __gomsible_secret_edit() {
-  eval "ansible-vault edit ${ANSIBLE_PATH}"
+  eval "ansible-vault edit ${ANSIBLE_PATH}/secrets.yml"
 }
 
 function __gomsible_deploy() {
