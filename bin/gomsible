@@ -1,23 +1,30 @@
 #! /bin/zsh
 
+# ansible 기본 경로
 ANSIBLE_PATH="${HOME}/.ansible"
-PROJECT_PATH=`pwd | sed 's%\(.*/ansible_origin\)/.*%\1%'`
+# GomiAnsible 경로
+PROJECT_PATH=`pwd | sed 's%\(.*/GomiAnsible\)/.*%\1%'`
+# 경로 덮어쓰기 명령
 REPLACE_DIR="rm -rf ${ANSIBLE_PATH} && mv -f ${PROJECT_PATH} ${ANSIBLE_PATH} && cd ${ANSIBLE_PATH};"
-SECRET_EDIT="ansible-vault edit ~${ANSIBLE_PATH}/secrets.yml"
+# 암호파일 수정 명령
+SECRET_EDIT="ansible-vault edit ${ANSIBLE_PATH}/secrets.yml"
+# 배포 task 기본 명령
 DEPLOY="ansible-playbook --ask-vault-pass"
 
-
+# 색상 코드
 MAGENTA='\033[0;35m'
 CYAN='\033[0;36m'
 RED='\033[0;31m'
 YELLOW='\033[0;33m'
+# no color
 NC='\033[0m'
 CHECK_MARK="\033[0;32m\xE2\x9C\x94\033[0m"
 SP_LINE="================================================"
 
-# $1: task
+# $1: task ( help / deploy / init / setdir / secredit )
 # $2..: options
 function gomsible() {
+  # 옵션을 파싱해 담을 변수 선언
   TARGET=""
   ENV=""
   BRANCH=""
@@ -37,6 +44,7 @@ function gomsible() {
       echo "$WELLCOME"
       ;;
     "init")
+    # 초기화 함수 실행
       __gomsible_init
       ;;
     "secredit")
@@ -44,76 +52,100 @@ function gomsible() {
       __gomsible_secret_edit
       ;;
     "setdir")
-      # set dir
+      # set dir 함수 실행
       __gomsible_ask_replacing_dir
       ;;
     "deploy")
-      # ansible-playbook
-      # 옵션 파싱
-      # args 는 전체 arg
+      # 옵션을 파싱하여 변수에 저장
+      # args에 전체 arg를 넘긴다.
       __gomsible_params_purify ${args}
-      echo -ne "${YELLOW}deploy to ${TARGET} ${ENV} server ${NC}"\\r
-      sleep 0.3
-      echo -ne "${YELLOW}deploy to ${TARGET} ${ENV} server \033[1;37m\xe2\x9c\x88${NC}"\\r
-      sleep 0.3
-      echo -ne "${YELLOW}deploy to ${TARGET} ${ENV} server \033[1;37m\xe2\x9c\x88 \033[1;36m\xe2\x9c\x88${NC}\\r"
-      sleep 0.3
-      echo -ne "${YELLOW}deploy to ${TARGET} ${ENV} server \033[1;37m\xe2\x9c\x88 \033[1;36m\xe2\x9c\x88 \033[1;34m\xe2\x9c\x88${NC}\n"
-      sleep 0.3
-      if [ '${ENV}' = 'production' ]; then
-        echo "${RED}!!! YOU ARE DEPLOYING TO PRODUCTION !!! \nHope you know what you do.${NC}"
-        read -n "_?Press enter to continue"
-      fi
+
+      # target이 설정되지 않았을 때 에러 출력
       if [ ${#TARGET} -lt 1 ]; then
         echo "${SP_LINE}\n${RED}ERROR :: Target option must be required.(-t)"
+      # 환경이 설정되지 않았을 때 에러 출력
       elif [ ${#ENV} -lt 1 ]; then
         echo "${SP_LINE}\n${RED}ERROR :: Environment option must be required.(-e)"
       else
+        # 시각화
+        echo -ne "${YELLOW}deploy to ${TARGET} ${ENV} server ${NC}"\\r
+        sleep 0.3
+        echo -ne "${YELLOW}deploy to ${TARGET} ${ENV} server \033[1;37m\xe2\x9c\x88${NC}"\\r
+        sleep 0.3
+        echo -ne "${YELLOW}deploy to ${TARGET} ${ENV} server \033[1;37m\xe2\x9c\x88 \033[1;36m\xe2\x9c\x88${NC}\\r"
+        sleep 0.3
+        echo -ne "${YELLOW}deploy to ${TARGET} ${ENV} server \033[1;37m\xe2\x9c\x88 \033[1;36m\xe2\x9c\x88 \033[1;34m\xe2\x9c\x88${NC}\n"
+        sleep 0.3
+
+        # 프로덕션 환경일 때 경고 문구
+        if [ '${ENV}' = 'production' ]; then
+          echo "${RED}!!! YOU ARE DEPLOYING TO PRODUCTION !!! \nHope you know what you do.${NC}"
+          read -n "_?Press enter to continue"
+        fi
+        # 저장된 변수들로 deploy 명령어 조합 후 실행
         __gomsible_deploy ${TARGET} ${ENV} ${HOTFIX} ${BRANCH}
       fi
       ;;
       *)
+      # 없는 task일 때 에러 출력
         echo "${RED}Unexpected task \`$args[1]${NC}\`"
       ;;
   esac
 }
 
+# gomsible 초기화 함수
 function __gomsible_init() {
   HEADER="${SP_LINE}\nInitiate to fit your ansible for gomi ansible\n${SP_LINE}"
   clear
   echo "${HEADER}"
   sleep 0.4
+  
   echo -e "Set your github name and password for git tasks"
+  # git username 입력받아 변수에 저장
   read -n "username?Type your Github name : "
+  # git password 입력받아 변수에 저장
   read -n "password?Type your Github password : "
+  # secrets.yml에 쓰기
   echo "gituser: ${username}\ngitpassword: ${password}" > secrets.yml
+  # secrets.yml을 암호화
   eval "ansible-vault encrypt secrets.yml"
   echo -e "${CHECK_MARK} Your github account is saved.\nYou can rewrite use command \"${MAGENTA}gomsible secredit${NC}\""
   read -n "_?Press enter to continue"
   clear
   echo -e "${HEADER}"
+
+  # dir 덮어쓰기 함수 실행
   __gomsible_ask_replacing_dir
+
+  # shell rc파일에 gomsible source 등록
   RC="${HOME}/.zshrc"
   REGIST="source ${ANSIBLE_PATH}/bin/gomsible"
   if ! grep -q ${REGIST} "${RC}"; then
     echo ${REGIST} >> ${RC}
   fi
+
+  # 초기화 끝
   echo "  ___                  ___  "
   echo " (o o)                (o o) "
   echo "(  V  ) Setting Done (  V  )"
   echo "--m-m------------------m-m--"
+
+  # shell 재설정
   eval "source ${HOME}/.zshrc"
 }
 
+# dir 덮어쓰기 함수
 function __gomsible_ask_replacing_dir() {
   echo -e "Checking directory.."
   sleep 1
+  # 이미 옮겨져 있는 경우 종료
   if [ "${PROJECT_PATH}" = "${ANSIBLE_PATH}" ]; then
     echo "${MAGENTA}Directory is already set.${NC}"
   else
       echo -e "You should replace ansible default directory to use GomiAnsible.\n"
       echo -e "You can do this later using command \"${MAGENTA}gomsible setdir${NC}\"\n"
       echo -e "(${RED}It will overwrite ansible default directory.${NC})\n"
+      # y를 입력하는 경우 옮기기 실행
       read "do?Replace now? [y/any(no)] :"
       if [ "${do}" = "y" ]; then
         eval "${REPLACE_DIR}"
@@ -121,22 +153,27 @@ function __gomsible_ask_replacing_dir() {
   fi
 }
 
+# 입력받은 옵션을 정제하는 함수. 대상 변수들의 scope은 gomsible 
 function __gomsible_params_purify() {
   # 옵션들을 받음
   args=("$@")
-  # 두번째 arg부터 옵션
+  # 첫번째 arg는 task이므로, 두번째 arg부터 옵션
   for ((i=2; i < $#; i++))
 {
   case $args[i] in
+    # -t 다음의 arg는 target
     "-t")
       TARGET="${args[i+1]}"
     ;;
+    # -e 다음의 arg는 env
     "-e")
       ENV="${args[i+1]}"
     ;;
+    # --hotfix가 있으면 true
     "--hotfix")
       HOTFIX="true"
     ;;
+    # -b 다음의 arg는 branch
     "-b")
       echo "${RED}Branch switching function has trouble, will be fixed soon.${NC}"
       # BRANCH="${args[i+1]}"
@@ -145,10 +182,12 @@ function __gomsible_params_purify() {
 }
 }
 
+# secret edit 함수
 function __gomsible_secret_edit() {
-  eval "ansible-vault edit ${ANSIBLE_PATH}/secrets.yml"
+  eval "${SECRET_EDIT}"
 }
 
+# deploy 함수
 function __gomsible_deploy() {
   TARGET=$1
   ENV=$2
@@ -164,6 +203,8 @@ function __gomsible_deploy() {
   else
     BRANCH=""
   fi
+  # 변수들로 command 조합
   COMMAND="${DEPLOY} ${ANSIBLE_PATH}/store_deploy.yml -i ${ANSIBLE_PATH}/hosts/inventory -e target_host=${TARGET_HOST} -e \"@${ANSIBLE_PATH}/vars/${TARGET_HOST}.json\" ${IS_HOTFIX}${BRANCH}"
+  # 실행
   eval ${COMMAND}
 }
