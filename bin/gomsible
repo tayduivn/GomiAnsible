@@ -138,7 +138,8 @@ function __gomsible_params_purify() {
       HOTFIX="true"
     ;;
     "-b")
-      BRANCH="${args[i+1]}"
+      echo "${RED}Branch switching function has trouble, will be fixed soon.${NC}"
+      # BRANCH="${args[i+1]}"
     ;;
   esac
 }
@@ -159,7 +160,7 @@ function __gomsible_deploy() {
   fi
   # branch
   if [ ${#BRANCH} -ge 1 ]; then
-    BRANCH=" -e git_version=$4"
+    BRANCH=" -e gitversion=$4"
   else
     BRANCH=""
   fi
