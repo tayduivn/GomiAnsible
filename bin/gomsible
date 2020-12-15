@@ -72,6 +72,9 @@ function gomsible() {
         __gomsible_deploy ${TARGET} ${ENV} ${HOTFIX} ${BRANCH}
       fi
       ;;
+      *)
+        echo "${RED}Unexpected task \`$args[1]${NC}\`"
+      ;;
   esac
 }
 
