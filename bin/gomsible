@@ -58,7 +58,7 @@ function gomsible() {
       sleep 0.3
       echo -ne "${YELLOW}deploy to ${TARGET} ${ENV} server \033[1;37m\xe2\x9c\x88 \033[1;36m\xe2\x9c\x88${NC}\\r"
       sleep 0.3
-      echo -ne "${YELLOW}deploy to ${TARGET} ${ENV} server \033[1;37m\xe2\x9c\x88 \033[1;36m\xe2\x9c\x88 \033[1;34m\xe2\x9c\x88${NC}\\r"
+      echo -ne "${YELLOW}deploy to ${TARGET} ${ENV} server \033[1;37m\xe2\x9c\x88 \033[1;36m\xe2\x9c\x88 \033[1;34m\xe2\x9c\x88${NC}\n"
       sleep 0.3
       if [ '${ENV}' = 'production' ]; then
         echo "${RED}!!! YOU ARE DEPLOYING TO PRODUCTION !!! \nHope you know what you do.${NC}"
@@ -162,7 +162,6 @@ function __gomsible_deploy() {
   else
     BRANCH=""
   fi
-  COMMAND="${DEPLOY} ${ANSIBLE_PATH}/store_deploy.yml -i ${ANSIBLE_PATH}/inventories/${TARGET}_${ENV}${IS_HOTFIX}${BRANCH}"
+  COMMAND="${DEPLOY} ${ANSIBLE_PATH}/store_deploy.yml -i ${ANSIBLE_PATH}/hosts/inventory -e target_host=${TARGET}_${ENV}${IS_HOTFIX}${BRANCH}"
   eval ${COMMAND}
-
 }

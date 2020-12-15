@@ -1,4 +1,4 @@
-- hosts: store_staging
+- hosts: "{{target_host}}"
   vars_files:
     - secrets.yml
   vars:
