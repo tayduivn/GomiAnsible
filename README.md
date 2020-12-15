@@ -141,6 +141,7 @@ https://github.com/gomicorp/GomiAnsible/
 ### gomsible secredit
 > init에서 입력한 git account config를 수정할 수 있습니다.
 내부적으로 아래의 명령을 수행합니다.
+
 `ansible-vault edit ${ANSIBLE_PATH}/secrets.yml`
 
 ### gomsible setdir
