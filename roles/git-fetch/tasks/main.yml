@@ -1,0 +1,11 @@
+---
+# tasks file for git-switch
+- name: Git Fetch All From Origin
+  command: git -c credential.helper='!f() { echo "username={{ gituser }}"; echo "password={{ gitpassword }}"; }; f cache --timeout=60' fetch origin
+  register: git_fetch_task
+  args:
+    chdir: "{{ app_path }}"
+
+- debug: var=git_fetch_task.stdout_lines
+- debug: var=git_fetch_task.stderr_lines
+  when: git_fetch_task is failed

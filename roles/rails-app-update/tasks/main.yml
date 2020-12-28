@@ -1,22 +1,15 @@
 ---
 # tasks file for app-update
-- name: Git Pull from Version Control
-  command: git pull "https://{{ gituser }}:{{ gitpassword }}@{{ repo_url }}" {{ (hotfix|default(false)) | ternary('', (gitversion | default(''))) }}
-  register: git_pull_task
-  args:
-    chdir: "{{ app_path }}"
-
-- debug: var=git_pull_task.stderr_lines
-- debug: var=git_pull_task.stdout_lines
-
 - name: Bundle
   command: bash -lc "bundle install --without development test"
   register: bundle_install_task
   args:
     chdir: "{{ app_path }}"
 
-- debug: var=bundle_install_task.stderr_lines
 - debug: var=bundle_install_task.stdout_lines
+- debug: var=bundle_install_task.stderr_lines
+  when: bundle_install_task is failed
+
 
 - name: Asset Compile
   command: bash -lc "rails webpacker:compile"
@@ -24,5 +17,6 @@
     chdir: "{{ app_path }}"
   register: asset_compile_task
 
-- debug: var=asset_compile_task.stderr_lines
 - debug: var=asset_compile_task.stdout_lines
+- debug: var=asset_compile_task.stderr_lines
+  when: asset_compile_task is failed

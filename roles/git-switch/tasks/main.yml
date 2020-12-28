@@ -1,0 +1,13 @@
+---
+# tasks file for git-switch
+- name: Git Switch To Target Branch
+  when: (gitversion is defined) and (gitversion|length > 0)
+  command: git checkout {{ gitversion }}
+  register: git_switch_task
+  args:
+    chdir: "{{ app_path }}"
+
+- debug: var=git_switch_task.stdout_lines
+- debug: var=git_switch_task.stderr_lines
+  when: git_switch_task is failed
+  

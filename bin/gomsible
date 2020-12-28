@@ -175,8 +175,7 @@ function __gomsible_params_purify() {
     ;;
     # -b 다음의 arg는 branch
     "-b")
-      echo "${RED}Branch switching function has trouble, will be fixed soon.${NC}"
-      # BRANCH="${args[i+1]}"
+      BRANCH="${args[i+1]}"
     ;;
   esac
 }
