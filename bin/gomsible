@@ -68,9 +68,9 @@ function gomsible() {
         echo "${SP_LINE}\n${RED}ERROR :: Environment option must be required.(-e)"
       else
         # 시각화
-        echo -ne "${YELLOW}deploy to ${TARGET} ${ENV} server ${NC}"\\r
+        echo -ne "${YELLOW}deploy to ${TARGET} ${ENV} server ${NC}\\r"
         sleep 0.3
-        echo -ne "${YELLOW}deploy to ${TARGET} ${ENV} server \033[1;37m\xe2\x9c\x88${NC}"\\r
+        echo -ne "${YELLOW}deploy to ${TARGET} ${ENV} server \033[1;37m\xe2\x9c\x88${NC}\\r"
         sleep 0.3
         echo -ne "${YELLOW}deploy to ${TARGET} ${ENV} server \033[1;37m\xe2\x9c\x88 \033[1;36m\xe2\x9c\x88${NC}\\r"
         sleep 0.3
@@ -78,7 +78,7 @@ function gomsible() {
         sleep 0.3
 
         # 프로덕션 환경일 때 경고 문구
-        if [ '${ENV}' = 'production' ]; then
+        if [ "${ENV}" = "production" ]; then
           echo "${RED}!!! YOU ARE DEPLOYING TO PRODUCTION !!! \nHope you know what you do.${NC}"
           read -n "_?Press enter to continue"
         fi
