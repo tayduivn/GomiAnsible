@@ -7,5 +7,6 @@
   args:
     chdir: "{{ app_path }}"
 
-- debug: var=db_migrate_task.stderr_lines
 - debug: var=db_migrate_task.stdout_lines
+- debug: var=db_migrate_task.stderr_lines
+  when: db_migrate_task is failed
