@@ -8,8 +8,9 @@
   become_method: sudo
 
 
-- debug: var=nginx_stop_task.stderr_lines
 - debug: var=nginx_stop_task.stdout_lines
+- debug: var=nginx_stop_task.stderr_lines
+  when: nginx_stop_task is failed
 
 
 - name: Nginx Start
@@ -18,5 +19,6 @@
   become: yes
   become_method: sudo
 
-- debug: var=nginx_start_task.stderr_lines
 - debug: var=nginx_start_task.stdout_lines
+- debug: var=nginx_start_task.stderr_lines
+  when: nginx_start_task is failed

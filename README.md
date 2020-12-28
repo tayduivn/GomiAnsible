@@ -152,4 +152,4 @@ https://github.com/gomicorp/GomiAnsible/
 > init에서 수행한, `GomiAnsible`dir을 `.ansible`dir로 교체하기 작업을 수행합니다.
 
 ---
-새로운 커밋은 언제나 환영입니다!
+# 새로운 커밋은 언제나 환영입니다!

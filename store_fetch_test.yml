@@ -7,8 +7,4 @@
     repo_url: "{{ base_repo_url }}/{{ app_name }}.git"
     db_action: "dump"
   roles: 
-    - git-action-before-app-update
-    # - rails-app-update
-    # - rails-db-update
-    # - rails-app-restart
-    # - nginx-restart
+    - git-fetch

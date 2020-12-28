@@ -1,0 +1,11 @@
+---
+# tasks file for git-pull
+- name: Git Pull from Version Control
+  command: git -c credential.helper='!f() { echo "username={{ gituser }}"; echo "password={{ gitpassword }}"; }; f cache --timeout=60' pull
+  register: git_pull_task
+  args:
+    chdir: "{{ app_path }}"
+
+- debug: var=git_pull_task.stdout_lines
+- debug: var=git_pull_task.stderr_lines
+  when: git_pull_task is failed
