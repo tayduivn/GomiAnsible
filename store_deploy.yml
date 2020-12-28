@@ -8,7 +8,7 @@
     db_action: "dump"
   roles: 
     - git-action-before-app-update
-    # - rails-app-update
-    # - rails-db-update
-    # - rails-app-restart
-    # - nginx-restart
+    - rails-app-update
+    - rails-db-update
+    - rails-app-restart
+    - nginx-restart
